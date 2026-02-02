@@ -302,7 +302,63 @@ classdef LocTransformN0<handle
                 out.(fn{k})=obj.(fn{k});
             end
         end
-        
+        function T = pack_T_matrices(obj)
+            T.channels = obj.channels;
+            T.frameshift = obj.frameshift;
+            T.transform2Reference_n = length(obj.transform2Reference);
+            for i = 1:T.transform2Reference_n
+                T.(strcat('transform2Reference_',num2str(i-1))) = obj.transform2Reference{i}.T;
+            end
+            T.transform2Target_n = length(obj.transform2Target);
+            for i = 1:T.transform2Reference_n
+                T.(strcat('transform2Target_',num2str(i-1))) = obj.transform2Target{i}.T;
+            end
+            T.transformZ2Reference_n = length(obj.transformZ2Reference);
+            for i = 1:T.transformZ2Reference_n
+                T.(strcat('transformZ2Reference_',num2str(i-1))) = obj.transformZ2Reference{i}.T;
+            end
+            T.transformZ2Target_n = length(obj.transformZ2Target);
+            for i = 1:T.transformZ2Reference_n
+                T.(strcat('transformZ2Target_',num2str(i-1))) = obj.transformZ2Target{i}.T;
+            end
+            T.info_n = length(obj.info);
+            for i = 1:T.info_n
+                T.(strcat('info_',num2str(i-1),'_xrange')) = obj.info{i}.xrange;
+                T.(strcat('info_',num2str(i-1),'_yrange')) = obj.info{i}.yrange;
+                T.(strcat('info_',num2str(i-1),'_type')) = obj.info{i}.type;
+                T.(strcat('info_',num2str(i-1),'_mirror')) = obj.info{i}.mirror;
+            end
+        end
+        function unpack_T_matrices(obj, T)
+            obj.channels = T.channels;
+            obj.frameshift = T.frameshift;
+            for i = 1:T.transform2Reference_n
+                if(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
+                    obj.transform2Reference{i} = projective2d(T.(strcat('transform2Reference_',num2str(i-1))));
+                elseif(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'affine'))
+                    obj.transform2Reference{i} = affine2d(T.(strcat('transform2Reference_',num2str(i-1))));
+                end
+            end
+            for i = 1:T.transform2Target_n
+                if(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
+                    obj.transform2Target{i} = projective2d(T.(strcat('transform2Target_',num2str(i-1))));
+                elseif(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'affine'))
+                    obj.transform2Target{i} = affine2d(T.(strcat('transform2Target_',num2str(i-1))));
+                end
+            end
+            for i = 1:T.transformZ2Reference_n                
+                obj.transformZ2Reference{i} = affine3d(T.(strcat('transformZ2Reference_',num2str(i-1))));
+            end
+            for i = 1:T.transformZ2Target_n
+                obj.transformZ2Target{i} = affine3d(T.(strcat('transformZ2Target_',num2str(i-1))));
+            end
+            for i = 1:T.info_n
+                obj.info{i}.xrange = T.(strcat('info_',num2str(i-1),'_xrange'));
+                obj.info{i}.yrange = T.(strcat('info_',num2str(i-1),'_yrange'));
+                obj.info{i}.type = T.(strcat('info_',num2str(i-1),'_type'));
+                obj.info{i}.mirror = T.(strcat('info_',num2str(i-1),'_mirror'));
+            end
+        end
     end
 end
 
