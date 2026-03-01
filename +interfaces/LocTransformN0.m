@@ -304,13 +304,14 @@ classdef LocTransformN0<handle
         end
         function T = pack_T_matrices(obj)
             T.channels = obj.channels;
+            T.unit = obj.unit;
             T.frameshift = obj.frameshift;
             T.transform2Reference_n = length(obj.transform2Reference);
             for i = 1:T.transform2Reference_n
                 T.(strcat('transform2Reference_',num2str(i-1))) = obj.transform2Reference{i}.T;
             end
             T.transform2Target_n = length(obj.transform2Target);
-            for i = 1:T.transform2Reference_n
+            for i = 1:T.transform2Target_n
                 T.(strcat('transform2Target_',num2str(i-1))) = obj.transform2Target{i}.T;
             end
             T.transformZ2Reference_n = length(obj.transformZ2Reference);
@@ -331,16 +332,17 @@ classdef LocTransformN0<handle
         end
         function unpack_T_matrices(obj, T)
             obj.channels = T.channels;
+            obj.unit = T.unit;
             obj.frameshift = T.frameshift;
             for i = 1:T.transform2Reference_n
-                if(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
+                if(i>1 && strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
                     obj.transform2Reference{i} = projective2d(T.(strcat('transform2Reference_',num2str(i-1))));
                 elseif(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'affine'))
                     obj.transform2Reference{i} = affine2d(T.(strcat('transform2Reference_',num2str(i-1))));
                 end
             end
             for i = 1:T.transform2Target_n
-                if(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
+                if(i>1 && strcmp(T.(strcat('info_',num2str(i-1),'_type')),'projective'))
                     obj.transform2Target{i} = projective2d(T.(strcat('transform2Target_',num2str(i-1))));
                 elseif(strcmp(T.(strcat('info_',num2str(i-1),'_type')),'affine'))
                     obj.transform2Target{i} = affine2d(T.(strcat('transform2Target_',num2str(i-1))));

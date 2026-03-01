@@ -175,10 +175,10 @@ p.status.String='save calibration';drawnow
 if ~isempty(p.outputfile)
     if p.smap
         parameters.smappos.P=[];
-        T = parameters.transformation.pack_T_matrice();
+        trans = parameters.transformation.pack_T_matrice();
         save(p.outputfile,'SXY','parameters','trans');
     else
-        T = parameters.transformation.pack_T_matrice();
+        trans = parameters.transformation.pack_T_matrice();
         save(p.outputfile,'cspline','parameters','trans');
     end
     filefig=strrep(p.outputfile,'.mat','.fig');
