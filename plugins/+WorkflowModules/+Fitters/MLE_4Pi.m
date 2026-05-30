@@ -230,7 +230,7 @@ ph=fileparts(p.cal_3Dfile);
 if ~exist(ph,'file')
     p.cal_3Dfile= [fileparts(obj.getPar('loc_outputfilename')) filesep '*.h5'];
 end
-filter={'*3Dcal.mat;psfmodel*.h5'};
+filter={'*.mat;*.h5'};
 [f,pfad]=uigetfile(filter,'load 3D calibration file',p.cal_3Dfile);
 if f
 %     l=load([p f]);

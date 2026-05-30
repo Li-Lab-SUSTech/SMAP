@@ -163,6 +163,41 @@ for X=1:length(p.xrange)-1
         SXY(X,Y)=struct('cspline',cspline,'Xrangeall',p.xrange+imageRoi(1),'Yrangeall',p.yrange+imageRoi(2),'Xrange',p.xrange([X X+1])+imageRoi(1),...
             'Yrange',p.yrange([Y Y+1])+imageRoi(2),'posind',[X,Y],'EMon',p.emgain,'PSF',{PSF});
         % ZERNIKE fitting taken out, now in calibrate3D_g.m
+         if p.zernikefit.calculatezernike %lu add
+            axzernike=axes(uitab(p.tabgroup,'Title','Zernikefit'));
+            axPupil=axes(uitab(p.tabgroup,'Title','Pupil'));
+            axMode=axes(uitab(p.tabgroup,'Title','ZernikeModel'));
+            %trim stack to size giben by cspline parameters and frame
+            %range.
+            if p.zernikefit.fitaverageStack
+            stack=csplinecal.PSF{1}; %this would be the average... not sure if good.
+            mp=ceil(size(stack,1)/2);
+            rxy=floor(p.ROIxy/2);
+            zborder=round(100/p.dz); %from alignment: outside is bad.
+            stack=stack(mp-rxy:mp+rxy,mp-rxy:mp+rxy,zborder+1:end-zborder);
+            %fitter expects photons. Add BG here? normalization? Here it is
+            %arbitrary
+            stack=stack*1000; %random photons, before normalized to maximum pixel
+            else
+                 zborder=round(100/p.dz); %from alignment: outside is bad.
+                ll=beadpos{X,Y}.LL;
+                llm=mean(ll(zborder+1:end-zborder,:),1);
+                [~,ind]=max(llm);
+                goodb=find(indgoods&indgoodc);
+                 stack=single(beadsh(goodb(ind)).stack.image); %later: take best bead (closest to average)
+                mp=ceil(size(stack,1)/2);
+                rxy=floor(p.ROIxy/2);
+
+                stack=stack(mp-rxy:mp+rxy,mp-rxy:mp+rxy,zborder+1:end-zborder);
+            end
+            p.zernikefit.dz=p.dz;
+            [SXY(X,Y).zernikefit,PSFZernike]=zernikefitBeadstack(stack,p.zernikefit,axzernike,axPupil,axMode);
+            coeffZ=Spline3D_interp(PSFZernike);
+            axzernikef=axes(uitab(p.tabgroup,'Title','Zval'));
+            p.z0=size(coeffZ,3)/2;
+            posbeads=testfit_spline(testallrois,{coeffZ},0,p,{},axzernikef);
+%              vectorPSF2cspline(300,SXY(X,Y).zernikefit,p) %lu add
+         end
     end
 end
 axcrlb=axes(uitab(p.tabgroup,'Title','CRLB'));
@@ -175,9 +210,11 @@ p.status.String='save calibration';drawnow
 if ~isempty(p.outputfile)
     if p.smap
         parameters.smappos.P=[];
-        save(p.outputfile,'SXY','parameters');
+        trans = parameters.transformation.pack_T_matrice();
+        save(p.outputfile,'SXY','parameters','trans');
     else
-        save(p.outputfile,'cspline','parameters');
+        trans = parameters.transformation.pack_T_matrice();
+        save(p.outputfile,'cspline','parameters','trans');
     end
     filefig=strrep(p.outputfile,'.mat','.fig');
     savefig(calibrationfigure,filefig,'compact');

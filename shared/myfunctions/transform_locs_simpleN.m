@@ -64,7 +64,22 @@ else %all initial estimation:
             locT(:,k)=star(k)-locT(:,k);
         end
     end
-    
+    for k=1:length(inforef.translation) %lu add,for平移
+        if inforef.translation(k)>0
+            locR(:,k)=locR(:,k)-star(k);
+        end
+     end 
+     for k=1:length(infotarget.translation) 
+        if infotarget.translation(k)>0
+            locT(:,k)=locT(:,k)-star(k);
+        end
+     end  %lu add,for平移
+          
+%      figure % lu add,看ref和target的散点图是否相近，且x范围为[0 300]
+%      scatter(locR(:,1),locR(:,2));     
+%      hold on; scatter(locT(:,1),locT(:,2),'r.');
+%      legend('Ref','Target');
+  
     %determine approximate shift
     xr=1:1:sref(1);yr=1:sref(2);
     ht=histcounts2(locT(:,1),locT(:,2),xr,yr);

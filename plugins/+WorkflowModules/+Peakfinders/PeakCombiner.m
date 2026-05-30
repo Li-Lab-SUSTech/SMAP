@@ -23,6 +23,9 @@ classdef PeakCombiner<interfaces.WorkflowModule
                     l=load(p.Tfile);
                     if isfield(l,'transformation')
                         obj.transform=l.transformation;  
+                    elseif isfield(l,'trans')
+                        obj.transform=interfaces.LocTransformN;
+                        obj.transform.unpack_T_matrices(l.trans);
                     elseif isfield(l,'SXY')
                         obj.transform=l.SXY(1).cspline.global.transformation;
                     elseif isfield(l,'saveloc')
@@ -308,7 +311,7 @@ classdef PeakCombiner<interfaces.WorkflowModule
         function loadbutton(obj,a,b)
             fn=obj.guihandles.Tfile.String;
             path=fileparts(fn);
-            filter={'*3Dcal.mat;psfmodel*.h5'};
+            filter={'*.mat;*.h5'};
             if ~exist(path,'file')
                 fn=[fileparts(obj.getPar('loc_outputfilename')) filesep '*.mat'];
             end

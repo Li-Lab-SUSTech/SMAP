@@ -130,43 +130,43 @@ classdef GuiMainSMAP<interfaces.GuiModuleInterface & interfaces.LocDataInterface
         %from tier1
             worked=false;
 %            try 
-                mainaddress='https://www.embl.de/download/ries/Documentation/';
-                docfiles={'SMAP_manual_NPC.pdf','Example_SMAP_Step_by_step.pdf','ProgrammingGuide.pdf','SMAP_UserGuide.pdf','Getting_Started.pdf'};
-%                 if isdeployed
-%                      outdir=[settingsdir filesep 'temp' filesep 'Documentation' filesep];
-%                 else
-%                      outdir=[pwd filesep 'Documentation' filesep 'pdf' filesep];
+%                 mainaddress='https://www.embl.de/download/ries/Documentation/';
+%                 docfiles={'SMAP_manual_NPC.pdf','Example_SMAP_Step_by_step.pdf','ProgrammingGuide.pdf','SMAP_UserGuide.pdf','Getting_Started.pdf'};
+% %                 if isdeployed
+% %                      outdir=[settingsdir filesep 'temp' filesep 'Documentation' filesep];
+% %                 else
+% %                      outdir=[pwd filesep 'Documentation' filesep 'pdf' filesep];
+% %                 end
+%                  outdir= [fileparts(pluginhelp) filesep 'pdf' filesep];
+%                  if ~exist(outdir,'dir')
+%                       mkdir(outdir)
+%                  end
+%                 for k=1:length(docfiles)
+%                     worked=worked|savewebfile([outdir docfiles{k}] ,[mainaddress docfiles{k}]);
 %                 end
-                 outdir= [fileparts(pluginhelp) filesep 'pdf' filesep];
-                 if ~exist(outdir,'dir')
-                      mkdir(outdir)
-                 end
-                for k=1:length(docfiles)
-                    worked=worked|savewebfile([outdir docfiles{k}] ,[mainaddress docfiles{k}]);
-                end
 %             catch err
 %                 err
 %                 s
 %             end
-            if ~worked
-                disp(['could not download and save documentation pdfs. Help might not work. Make sure you have write access to settings. Move the settings directory to ' possibledirs]);
-                warndlg(['could not download and save documentation pdfs. Help might not work.  Make sure you have write access to settings. Move the settings directory to ' possibledirs])
-            end
+            % if ~worked
+            %     disp(['could not download and save documentation pdfs. Help might not work. Make sure you have write access to settings. Move the settings directory to ' possibledirs]);
+            %     warndlg(['could not download and save documentation pdfs. Help might not work.  Make sure you have write access to settings. Move the settings directory to ' possibledirs])
+            % end
             
             %update plugin file if new plugins are saved
             makeplugincallfile('plugins');
             makeGeometricModelList; %XXXX did not owrk removed on the
             % 5.7.24
             %add java path to bioformats
-                bfpath=obj.getGlobalSetting('bioformatspath');
-                bffile=[bfpath filesep 'bioformats_package.jar'];
-                
-            if exist(bffile,'file') %&& ~isdeployed
-                javaaddpath(bffile);
-            else
-                disp('bioformats package not found. Please select path to bioformats_package.jar in the Preferences.')
-                disp('you can download the Matlab toolbox for bioformats at  https://www.openmicroscopy.org/bio-formats/downloads/')
-            end
+            %     bfpath=obj.getGlobalSetting('bioformatspath');
+            %     bffile=[bfpath filesep 'bioformats_package.jar'];
+            % 
+            % if exist(bffile,'file') %&& ~isdeployed
+            %     javaaddpath(bffile);
+            % else
+            %     disp('bioformats package not found. Please select path to bioformats_package.jar in the Preferences.')
+            %     disp('you can download the Matlab toolbox for bioformats at  https://www.openmicroscopy.org/bio-formats/downloads/')
+            % end
            
             
             handle=figure(199);

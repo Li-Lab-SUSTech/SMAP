@@ -19,12 +19,16 @@ end
                end
            elseif ~isempty(dir([path filesep '*metadata.txt']))
                 imloader=@imageloaderMM;
+           elseif ~isempty(dir([path filesep '*metadata.cfg']))
+                imloader=@imageloaderTucam;
            elseif any(strfind(file,'MMStack'))
                 imloader=@imageloaderMM;
            elseif filesize(file)>4e9&&filesize(file)<4.5e9
                imloader=@imageloaderMM;
            elseif countfiles(file)>1000
                imloader=@imageloaderMMsingle;
+           elseif any(strfind(file,'NDTiffStack'))
+                imloader=@imageloaderNDTiff;
            else
                imloader=@imageloaderOME;
 %                imloader=@imageloaderMM;
@@ -35,15 +39,13 @@ end
            imloader=@imageloaderMMsingle;
        case '.dcimg'
            imloader=@imageloaderDCIMG;
-       case '.mat'
-           imloader=@imageloader_mat;
        otherwise
            imloader=@imageloaderOME;
    end    
    try
         [io]=imloader(varargin{:});
    catch err
-       disp(getReport(err, 'extended', 'hyperlinks', 'on'))
+       err
        disp('simple tiff loader loader')
        imloader=@imageloaderTifSimple;
        io=imloader(varargin{:});

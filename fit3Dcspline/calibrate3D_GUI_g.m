@@ -187,7 +187,11 @@ classdef calibrate3D_GUI_g<handle
             obj.guihandles.Tfile=uicontrol('style','edit','String','','Position',[xpos1+1.25*xw,top-20*vsep,xw*2.75,fieldheight],'FontSize',fontsize);
             
             obj.guihandles.makeT=uicontrol('style','checkbox','String','make T','Value',1,'Position',[xpos1,top-21*vsep,xw*1,fieldheight],'FontSize',fontsize,'Callback',@obj.modality_callback);
-            obj.guihandles.Tmode=uicontrol('style','popupmenu','String',{'up-down','up-down mirror','right-left','right-left mirror','2 cam','2 cam u-d mirror','2 cam r-l mirror'},'Position',[xpos1+1.3*xw,top-22*vsep,xw*1.5,fieldheight],'FontSize',fontsize,'Callback',@obj.changeTmode_callback);
+%             obj.guihandles.Tmode=uicontrol('style','popupmenu','String',{'up-down','up-down mirror','right-left','right-left mirror','2 cam','2 cam u-d mirror','2 cam r-l mirror'},'Position',[xpos1+1.3*xw,top-22*vsep,xw*1.5,fieldheight],'FontSize',fontsize,'Callback',@obj.changeTmode_callback);
+            obj.guihandles.Tmode=uicontrol('style','popupmenu','String',{'up-down','up-down mirror','right-left','right-left mirror',...
+                '2 cam','2 cam u-d mirror','2 cam r-l mirror','right-left translation'},...
+                'Position',[xpos1+1.3*xw,top-22*vsep,xw*1.5,fieldheight],'FontSize',fontsize,...
+                'Callback',@obj.changeTmode_callback); %lu add 'right-left translation'             
             obj.guihandles.tform=uicontrol('style','popupmenu','String',{'projective','affine','polynomial','lwm','pwl','nonreflectivesimilarity'},'Position',[xpos1+2.5*xw,top-21*vsep,xw*1.5,fieldheight],'FontSize',fontsize,'Value',1);
             
             obj.guihandles.Tsplitpost=uicontrol('style','text','String','Split (pix)','Position',[xpos1+2.8*xw,top-22*vsep,xw*.8,fieldheight],'FontSize',fontsize);
@@ -226,8 +230,8 @@ classdef calibrate3D_GUI_g<handle
                 obj.guihandles.setframes=uicontrol('style','checkbox','String','set frames','Position',[xpos1+2*xw,top-24*vsep,xw*1,fieldheight],'FontSize',fontsize,'HorizontalAlignment',ha,'Callback',@obj.setframes_callback);
                 obj.guihandles.framerange=uicontrol('style','edit','String','50 250','Position',[xpos1+3*xw,top-24*vsep,xw,fieldheight],'FontSize',fontsize,'Visible','off');
                 
-                obj.guihandles.zernikefit=uicontrol('style','checkbox','String','Fit Zernike coefficients','Position',[xpos1,top-26*vsep,xw*2,fieldheight],'FontSize',fontsize,'HorizontalAlignment',hatitle,'FontWeight','bold','Callback',@obj.zernike_callback,'Value',0,'Visible','off');    
-                obj.guihandles.zernikepar=uicontrol('style','pushbutton','String','Parameters','Position',[xpos1+2*xw,top-26*vsep,xw*1,fieldheight],'FontSize',fontsize,'Callback',@obj.zernikepar_callback,'Visible','off');    
+                obj.guihandles.zernikefit=uicontrol('style','checkbox','String','Fit Zernike coefficients','Position',[xpos1,top-26*vsep,xw*2,fieldheight],'FontSize',fontsize,'HorizontalAlignment',hatitle,'FontWeight','bold','Callback',@obj.zernike_callback,'Value',0,'Visible','on');    
+                obj.guihandles.zernikepar=uicontrol('style','pushbutton','String','Parameters','Position',[xpos1+2*xw,top-26*vsep,xw*1,fieldheight],'FontSize',fontsize,'Callback',@obj.zernikepar_callback,'Visible','on');    
                 
 %                 obj.guihandles.emgain=uicontrol('style','checkbox','String','EM gain used (mirrored)','Position',[xpos1,top-27*vsep,2*xw,fieldheight],'FontSize',fontsize,'HorizontalAlignment',ha); 
                 obj.guihandles.emgain=uicontrol('style','popupmenu','String',{'EM gain and mirror from metadata','no mirror','EM gain used (mirrored)'},'Position',[xpos1,top-27*vsep,3*xw,fieldheight],'FontSize',fontsize,'HorizontalAlignment',ha); 
@@ -462,7 +466,7 @@ classdef calibrate3D_GUI_g<handle
             imgmaxp(~obj.roimask)=max(imgmax(:));
            imagesc(imgmaxp)
         end
-        function out=run_callback(obj,a,b)
+        function out=run_callback(obj,~,b)
             p.filelist=obj.guihandles.filelist.String;
             p.outputfile=obj.guihandles.outputfile.String;
             p.dz=str2double(obj.guihandles.dz.String);

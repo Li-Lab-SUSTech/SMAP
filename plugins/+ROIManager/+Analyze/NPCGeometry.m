@@ -239,6 +239,11 @@ if p.copytopage
     subplot(sm,sn,4,axt)
 end
 
+%lu
+name='lu';
+zt_1=zt(indzin);
+save([name,'.mat'],'sigma','d','dpl','zt_1','R0');
+
 %copy to clipboard
 
 filen=obj.SE.files(sites(1).info.filenumber).name;

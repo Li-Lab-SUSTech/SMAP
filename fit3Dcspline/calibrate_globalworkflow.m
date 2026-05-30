@@ -151,15 +151,15 @@ else
 end
 SXY_g=S;
 transformation=parameters_g.transformation;
+trans = transformation.pack_T_matrices();
 calibrationfigure=f;
 if ~isempty(p.outputfile)
     if p.smap
         parameters1.smappos.P=[]; parameters2.smappos.P=[]; parameters_g.smappos.P=[];
         parameters_g.parameters1.smappos.P=[];parameters_g.parameters2.smappos.P=[];
-        save(p.outputfile,'SXY','SXY_g','parameters_g','parameters1','parameters2','transformation');
-        
+        save(p.outputfile,'SXY','SXY_g','parameters_g','parameters1','parameters2','transformation','trans');
     else
-        save(p.outputfile,'gausscal','cspline_all','gauss_sx2_sy2','gauss_zfit','cspline','parameters');
+        save(p.outputfile,'gausscal','cspline_all','gauss_sx2_sy2','gauss_zfit','cspline','parameters','trans');
     end
     filefig=strrep(p.outputfile,'.mat','.fig');
     savefig(calibrationfigure,filefig,'compact');
@@ -178,6 +178,7 @@ if  ~isfield(p,'xrange')
 end
 
 ismirror=contains(p.Tmode,'mirror');
+istranslation=contains(p.Tmode,'translation');%lu
 switch p.Tmode
     case {'up-down','up-down mirror'}
         splitpos=p.Tsplitpos(1);
@@ -208,7 +209,7 @@ switch p.Tmode
         pr.roiind=2;
 %         pr.mirrorax=[1 0]*ismirror;
          pr.mirrorax=[0 1]*ismirror;
-    case {'right-left','right-left mirror'}
+    case {'right-left','right-left mirror','right-left translation'}%lu add 'right-left translation'
           splitpos=p.Tsplitpos(end);
          if max(p.xrange)<splitpos %defined only in upper part
             xrange1=p.xrange;
@@ -237,6 +238,7 @@ switch p.Tmode
         pr.roiind=1;
 %         pr.mirrorax=[0 1]*ismirror;
         pr.mirrorax=[1 0]*ismirror;
+        pr.translationax=[1 0]*istranslation; %lu
     case {'2 cam','2 cam u-d mirror','2 cam r-l mirror'}
         pr.xrange1=p.xrange;pr.yrange1=p.yrange;
         pr.xrange2=p.xrange;pr.yrange2=p.yrange;
@@ -276,14 +278,19 @@ ph.ref2=camroi2(1:2);
 pp=getranges(ph);
 transform=interfaces.LocTransformN;
 pt.mirror=[false false]; %ref
-pt.xrange=pp.xrange1+camroi1(1); 
+if  contains(ph.Tmode,'translation') %lu 平移
+    pt.translation=pp.translationax;
+else
+    pt.translation=[false false];
+end
+pt.xrange=pp.xrange1+camroi1(1);
 pt.yrange=pp.yrange1+camroi1(2);
 pt.unit='pixel';
 %pt.type='projective'; %old
 pt.type=ph.Tform; %use from GUI
 transform.setTransform(1,pt)
 pt.mirror=pp.mirrorax;
-
+pt.translation=[false false]; %lu 平移
 pt.xrange=pp.xrange2+camroi2(1);
 pt.yrange=pp.yrange2+camroi2(2);
 transform.setTransform(2,pt)

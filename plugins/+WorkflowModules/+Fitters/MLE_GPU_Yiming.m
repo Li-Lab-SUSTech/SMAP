@@ -325,7 +325,7 @@ if isempty(p.cal_3Dfile)
     end  
     p.cal_3Dfile=[path filesep '*3dcal.mat'];
 end
-filter={'*3Dcal.mat;psfmodel*.h5'};
+filter={'*.mat;*.h5'};
 [f,pfad]=uigetfile(filter,'load 3D calibration file',p.cal_3Dfile);
 if f
     [~,~,ext]=fileparts(f);
@@ -364,7 +364,8 @@ switch fitpar.fitmode
         calfile=p.cal_3Dfile;
         [~,~,ext]=fileparts(calfile);
         switch ext
-            case '.mat'
+%             case '*.mat'
+            case '.mat' %lu
                 cal=load(calfile);
                 fitpar.objPos=0;
                 if isfield(cal,'outforfit')

@@ -771,7 +771,7 @@ ph=fileparts(p.cal_3Dfile);
 if ~exist(ph,'file')
     p.cal_3Dfile= [fileparts(obj.getPar('loc_outputfilename')) filesep '*.mat'];
 end
-filter={'*3Dcal.mat;psfmodel*.h5'};
+filter={'*.mat;*.h5'};
 [f,pfad]=uigetfile(filter,'load 3D calibration file',p.cal_3Dfile);
 if f
 %     l=load([p f]);
@@ -837,7 +837,7 @@ if fitpar.fitmode==2 %calibration file
                             else
                                 zpar{X,Y}=[];
                             end
-        
+                        
                         cs=SS(X,Y,Z).cspline;
                         if iscell(cs.coeff)
                             coeff(:,:,:,:,1)=cs.coeff{1};
