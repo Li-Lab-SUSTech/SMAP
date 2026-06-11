@@ -9,3 +9,4 @@ External/bfmatlab/*
 *.docx
 Documentation/pdf/*
 LocMoFit/modelList.m
+.idea/

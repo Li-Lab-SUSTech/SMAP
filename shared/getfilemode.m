@@ -8,6 +8,16 @@ if strcmpi(ext,'.tif')
     emptylocs=false;
     return
 end
+if strcmpi(ext,'.h5')&& (contains(f,'_sml_mls') || contains(f,'_mls'))
+    mode='mls_h5';
+    emptylocs=true;
+    return
+end
+if strcmpi(ext,'.mat')&& (contains(f,'_sml_mls') || contains(f,'_mls'))
+    mode='mls_mat';
+    emptylocs=true;
+    return
+end
 if strcmpi(ext,'.mat')&& (contains(f,'_sml') || ~isempty(regexp(file,'_sml_p\d*.mat')))
     mode='sml';
     emptylocs=true;

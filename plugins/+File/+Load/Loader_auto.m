@@ -55,7 +55,7 @@ pard.restoreROI.TooltipString='Restore ROI if saved with data.';
 
 
 info.name='auto loader';
-info.extensions={'*.mat;*.tif;*.csv;*.hdf5';'*.mat';'*.tif';'*.csv';'*.*'};
+info.extensions={'*.mat;*.tif;*.csv;*.h5;*.hdf5';'*.mat';'*.h5';'*.tif';'*.csv';'*.*'};
 info.dialogtitle='select any SMLM position, Tif, csv, settings or workflow file';
 pard.plugininfo=info;
 pard.plugininfo.type='LoaderPlugin';
@@ -78,8 +78,8 @@ obj.notfound=false;
         switch mode
             case 'tif'
                 loadername='Loader_tif';
-
-            case {'sml','fitpos','sites','se'}
+                
+            case {'sml','fitpos','sites','se', 'mls_h5','mls_mat'}
                 loadername='Loader_sml';
                 
             case 'guiparameters'

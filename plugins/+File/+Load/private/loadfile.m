@@ -2,13 +2,35 @@ function loadfile(obj,p,file,mode)
 % fobj=obj.locData.files;
 % obj.locData.files.filenumberEnd=obj.locData.files.filenumberEnd+1; %write back to .files
 % filedat=load(file);
-filedat=loadmatparts(file);
+if strcmp(mode, 'mls_h5')
+    filedat = read_h5_group(file, '/');
+else
+    filedat=loadmatparts(file);
+end
 
 filedat.filename=file;
 
 filenumber=obj.locData.files.filenumberEnd;
+
+if strcmp(mode, 'mls_h5') || strcmp(mode, 'mls_mat')
+    if isfield(filedat.saveloc.file,'raw')
+        new_raw = struct([]);
+        len = length(filedat.saveloc.file.raw.frame);
+        if len==1
+            new_raw(1).image = filedat.saveloc.file.raw.image;
+            new_raw(1).frame = filedat.saveloc.file.raw.frame;
+        else
+            for k = 1:len
+                new_raw(k).image = squeeze(filedat.saveloc.file.raw.image(k,:,:));
+                new_raw(k).frame = filedat.saveloc.file.raw.frame(k);
+            end
+        end
+        filedat.saveloc.file.raw = new_raw;
+    end
+end
+
 switch mode
-    case {'sml','se'}
+    case {'sml','se', 'mls_h5', 'mls_mat'}
         [templocData,GUIsettings,siteexplorer]=load_smlV3(filedat);
         obj.setPar('lastSMLFile',file);
     case 'fitpos'
@@ -122,4 +144,36 @@ for k = 1:length(se.sites)
     end
 end
 % Yu-Le added end/
+end
+
+function data = read_h5_group(filename, group_path)
+info = h5info(filename, group_path);
+data = struct();
+% datasets
+for i = 1:length(info.Datasets)
+    ds = info.Datasets(i);
+    A = h5read( ...
+        filename, ...
+        [group_path '/' ds.Name] ...
+    );
+    if isnumeric(A) || islogical(A)
+        % 标量无需处理
+        if ~isscalar(A)
+            A = permute(A, ndims(A):-1:1);
+        end
+    end
+    data.(ds.Name) = A;
+
+end
+% subgroups
+for i = 1:length(info.Groups)
+    grp = info.Groups(i);
+
+    [~, name] = fileparts(grp.Name);
+
+    data.(name) = read_h5_group( ...
+        filename, ...
+        grp.Name ...
+    );
+end
 end
